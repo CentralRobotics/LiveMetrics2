@@ -76,6 +76,8 @@ h1 .by {
     gap: 20px;
 }
 
+
+
 .button-container button {
     background-color: #ff4040;
     color: #fff;
@@ -87,8 +89,17 @@ h1 .by {
     transition: background-color 0.3s ease;
 }
 
+
+
 .button-container button:hover {
     background-color: #ff5757;
+}
+
+.button-container button:disabled { 
+    background-color: rgb(26, 26, 26);
+    border: 0.2px solid rgb(29, 29, 29);
+    color: rgb(70, 70, 70);
+    cursor:not-allowed; 
 }
 
 .pulse-box {

@@ -9,6 +9,9 @@ const tempText = document.getElementById('tempText');
 const ramText = document.getElementById('ramText');
 const uptimeText = document.getElementById('uptimeText');
 const pulseBox = document.getElementById('pulseBox');
+const rebootButton = document.getElementById('rebootButton');
+const refreshMetricsButton = document.getElementById('refreshMetricsButton');
+
 
 // Create circular progress meters using Chart.js
 const cpuChart = new Chart(cpuMeter, {
@@ -26,7 +29,7 @@ const cpuChart = new Chart(cpuMeter, {
         rotation: -90,
         circumference: 180,
         plugins: {
-            tooltip: { enabled: false }
+            tooltip: { enabled: true }
         }
     }
 });
@@ -46,7 +49,7 @@ const tempChart = new Chart(tempMeter, {
         rotation: -90,
         circumference: 180,
         plugins: {
-            tooltip: { enabled: false }
+            tooltip: { enabled: true }
         }
     }
 });
@@ -66,7 +69,7 @@ const ramChart = new Chart(ramMeter, {
         rotation: -90,
         circumference: 180,
         plugins: {
-            tooltip: { enabled: false }
+            tooltip: { enabled: true }
         }
     }
 });
@@ -86,7 +89,7 @@ const uptimeChart = new Chart(uptimeMeter, {
         rotation: -90,
         circumference: 180,
         plugins: {
-            tooltip: { enabled: false }
+            tooltip: { enabled: true }
         }
     }
 });
@@ -127,6 +130,8 @@ socket.on('disconnect', function () {
         setTimeout(() => pulseBox.style.backgroundColor = '#1a1919', 200);
     }, 400);
     document.body.style.background = '#0d0d0d'
+    refreshMetricsButton.disabled = true; 
+    rebootButton.disabled = true;
 });
 
 blinkInterval = setInterval(function() { 
@@ -138,6 +143,8 @@ socket.on('connect', function () {
     console.log('Reconnected!')
     setTimeout(() => pulseBox.style.backgroundColor = '#ff00f7', 100);
     document.body.style.background = 'linear-gradient(156deg, rgba(2,0,36,1) 0%, rgba(65,3,3,1) 100%)'
+    refreshMetricsButton.disabled = false; 
+    rebootButton.disabled = false;
 });
 
 
@@ -161,14 +168,13 @@ const header = document.getElementById('metricsTextHeader');
 
 
 
-    const rebootButton = document.getElementById('rebootButton');
-    const refreshMetricsButton = document.getElementById('refreshMetricsButton');
 
     
         rebootButton.addEventListener('click', () => {
             if (confirm('Are you sure you want to reboot Pi?')) {
                 socket.emit('reboot_pi');
-               
+                refreshMetricsButton.disabled = true; 
+                rebootButton.disabled = true;
             }
         });
 
