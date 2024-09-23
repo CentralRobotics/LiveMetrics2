@@ -131,3 +131,22 @@ blinkInterval = setInterval(function() {
 socket.on('connect', function () {
     setTimeout(() => pulseBox.style.backgroundColor = '#ff00f7', 100);
 });
+
+
+
+const header = document.getElementById('metricsTextHeader');
+
+    // Function to activate hover effect
+    function activateHover() {
+        header.classList.add('active');
+        console.log('active')
+    }
+
+    // Function to deactivate hover effect
+    function deactivateHover() {
+        header.classList.remove('active');
+        console.log('not active')
+    }
+    activateHover()
+    // Optionally, deactivate it after a few seconds
+    setTimeout(deactivateHover, 2000);
