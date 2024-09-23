@@ -124,7 +124,7 @@ socket.on('disconnect', function () {
 });
 
 blinkInterval = setInterval(function() { 
-    pulseBox.style.backgroundColor = '#5eff5e';
+    pulseBox.style.backgroundColor = '#ffe600';
     setTimeout(() => pulseBox.style.backgroundColor = '#00f7ff', 200);
 }, 400);
 
