@@ -62,13 +62,30 @@ io.on('connection', (socket) => {
         socket.emit('update_metrics', metrics);
     }, 1000); 
 
+
+    socket.on('reboot_pi', () => {
+        console.log('Rebooting Raspberry Pi...');
+        exec('sudo reboot', (error, stdout, stderr) => {
+            if (error) {
+                console.error(`Error executing reboot: ${error.message}`);
+                return;
+            }
+            console.log(`Reboot stdout: ${stdout}`);
+        });
+    });
+
+
     socket.on('disconnect', () => {
         clearInterval(interval);
         console.log(chalk.red('Client disconnected'));
     });
+
+
+
+
 });
 
-const PORT = 5000;
+const PORT = 5001;
 
 const { interval, spinner } = loadingAnimation();
 

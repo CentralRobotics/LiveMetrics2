@@ -92,8 +92,10 @@ const uptimeChart = new Chart(uptimeMeter, {
 });
 
 var blinkInterval; 
+var blinkInterval2; 
 socket.on('update_metrics', function (data) {
     clearInterval(blinkInterval);
+    clearInterval(blinkInterval2);
     pulseBox.style.backgroundColor = '#5eff5e';
     setTimeout(() => pulseBox.style.backgroundColor = '#2f2f2f', 500);
 
@@ -120,16 +122,22 @@ socket.on('update_metrics', function (data) {
 });
 
 socket.on('disconnect', function () {
-    pulseBox.style.backgroundColor = 'red';
+    blinkInterval2 = setInterval(function() { 
+        pulseBox.style.backgroundColor = 'red';
+        setTimeout(() => pulseBox.style.backgroundColor = '#1a1919', 200);
+    }, 400);
+    document.body.style.background = '#0d0d0d'
 });
 
 blinkInterval = setInterval(function() { 
     pulseBox.style.backgroundColor = '#ffe600';
-    setTimeout(() => pulseBox.style.backgroundColor = '#00f7ff', 200);
+    setTimeout(() => pulseBox.style.backgroundColor = '#1a1919', 200);
 }, 400);
 
 socket.on('connect', function () {
+    console.log('Reconnected!')
     setTimeout(() => pulseBox.style.backgroundColor = '#ff00f7', 100);
+    document.body.style.background = 'linear-gradient(156deg, rgba(2,0,36,1) 0%, rgba(65,3,3,1) 100%)'
 });
 
 
@@ -148,5 +156,23 @@ const header = document.getElementById('metricsTextHeader');
         console.log('not active')
     }
     activateHover()
-    // Optionally, deactivate it after a few seconds
     setTimeout(deactivateHover, 2000);
+
+
+
+
+    const rebootButton = document.getElementById('rebootButton');
+    const refreshMetricsButton = document.getElementById('refreshMetricsButton');
+
+    
+        rebootButton.addEventListener('click', () => {
+            if (confirm('Are you sure you want to reboot Pi?')) {
+                socket.emit('reboot_pi');
+               
+            }
+        });
+
+
+        refreshMetricsButton.addEventListener('click', () => {
+           window.location.reload();
+        });
