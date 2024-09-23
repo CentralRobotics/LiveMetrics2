@@ -1,22 +1,17 @@
-
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const os = require('os');
 const osUtils = require('os-utils');
 
-// Initialize Express
 const app = express();
 const server = http.createServer(app);
 const io = socketIo(server);
 
-// Serve static files (HTML, CSS, etc.)
 app.use(express.static(__dirname + '/public'));
 
-// Function to get system metrics
 function getMetrics() {
     return new Promise((resolve) => {
-        // Get CPU temperature (using a shell command)
         const tempCommand = "vcgencmd measure_temp";
         const exec = require('child_process').exec;
         exec(tempCommand, (error, stdout) => {
@@ -27,13 +22,20 @@ function getMetrics() {
 
             // Get CPU usage
             osUtils.cpuUsage((cpuUsage) => {
-                // Get time awake
-                const timeAwake = os.uptime();
+                
+                const totalMemory = os.totalmem();
+                const freeMemory = os.freemem();
+                const ramUsage = ((totalMemory - freeMemory) / totalMemory * 100).toFixed(2);
+
+                
+                const uptimeInSeconds = os.uptime();
+                const uptimeInMinutes = (uptimeInSeconds / 60).toFixed(2);
 
                 resolve({
                     temp: temp,
                     cpuUsage: (cpuUsage * 100).toFixed(2),
-                    timeAwake: timeAwake
+                    ramUsage: ramUsage,
+                    uptime: uptimeInMinutes
                 });
             });
         });
@@ -47,7 +49,7 @@ io.on('connection', (socket) => {
     const interval = setInterval(async () => {
         const metrics = await getMetrics();
         socket.emit('update_metrics', metrics);
-    }, 1000); // Update every second
+    }, 1000); 
 
     socket.on('disconnect', () => {
         clearInterval(interval);
@@ -55,7 +57,6 @@ io.on('connection', (socket) => {
     });
 });
 
-// Start the server
 const PORT = 5000;
 server.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);

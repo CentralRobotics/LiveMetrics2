@@ -3,151 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Raspberry Pi Metrics</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #1d1f21;
-            color: #fff;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            height: 100vh;
-        }
-        h1 {
-            color: #fff;
-            margin-bottom: 30px;
-        }
-        .metric-container {
-            display: flex;
-            justify-content: center;
-            gap: 50px;
-        }
-        .metric {
-            width: 200px;
-            height: 200px;
-        }
-        canvas {
-            width: 100% !important;
-            height: 100% !important;
-        }
-        p {
-            margin: 0;
-            padding-top: 10px;
-            color: #aaa;
-        }
-    </style>
+    <title>LM2</title>
+   <link rel="stylesheet" href="style.css">
     <!-- Load Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-    <h1>Live Raspberry Pi Metrics</h1>
+    <h1>LiveMetrics2</h1>
 
     <div class="metric-container">
         <div class="metric">
             <canvas id="cpuMeter"></canvas>
+            <div class="center-text" id="cpuText">0%</div>
             <p>CPU Usage</p>
         </div>
         <div class="metric">
             <canvas id="tempMeter"></canvas>
+            <div class="center-text" id="tempText">0°C</div>
             <p>Temperature</p>
+        </div>
+        <div class="metric">
+            <canvas id="ramMeter"></canvas>
+            <div class="center-text" id="ramText">0%</div>
+            <p>RAM Usage</p>
+        </div>
+        <div class="metric">
+            <canvas id="uptimeMeter"></canvas>
+            <div class="center-text" id="uptimeText">0 min</div>
+            <p>Alive Time</p>
         </div>
     </div>
 
-    <script>
-        const socket = io();
-
-        // Plugin to add text in the center of the doughnut chart
-        const textCenterPlugin = {
-            id: 'textCenter',
-            afterDatasetsDraw(chart) {
-                const { ctx, data, chartArea: { width, height } } = chart;
-                ctx.save();
-                const fontSize = (height / 6).toFixed(2);  // Adjust the font size for better centering
-                ctx.font = `${fontSize}em Arial`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-
-                // Get center position
-                const textX = width / 2;
-                const textY = height / 2;
-
-                // Draw the text (the percentage or temperature in the center)
-                ctx.fillStyle = '#fff';
-                const text = `${data.datasets[0].label}`;
-                ctx.fillText(text, textX, textY);
-                ctx.restore();
-            }
-        };
-
-        // Register the plugin
-        Chart.register(textCenterPlugin);
-
-        const cpuMeter = document.getElementById('cpuMeter').getContext('2d');
-        const tempMeter = document.getElementById('tempMeter').getContext('2d');
-
-        // Create circular progress meters using Chart.js
-        const cpuChart = new Chart(cpuMeter, {
-            type: 'doughnut',
-            data: {
-                datasets: [{
-                    data: [0, 100],
-                    backgroundColor: ['#4CAF50', '#2f2f2f'],
-                    borderWidth: 2,
-                    label: '0%' // Default label for CPU
-                }]
-            },
-            options: {
-                responsive: true,
-                cutout: '80%',
-                rotation: -90,  // Start from the top (270°)
-                circumference: -180,  // Counterclockwise progress (180° for half-circle)
-                plugins: {
-                    textCenter: true,
-                    tooltip: { enabled: false }
-                }
-            }
-        });
-
-        const tempChart = new Chart(tempMeter, {
-            type: 'doughnut',
-            data: {
-                datasets: [{
-                    data: [0, 100],
-                    backgroundColor: ['#ff5722', '#2f2f2f'],
-                    borderWidth: 2,
-                    label: '0°C' // Default label for Temp
-                }]
-            },
-            options: {
-                responsive: true,
-                cutout: '80%',
-                rotation: -90,  // Start from the top (270°)
-                circumference: -180,  // Counterclockwise progress
-                plugins: {
-                    textCenter: true,
-                    tooltip: { enabled: false }
-                }
-            }
-        });
-
-        // Function to update the circular progress meters
-        socket.on('update_metrics', function (data) {
-            // Update CPU meter
-            cpuChart.data.datasets[0].data = [data.cpuUsage, 100 - data.cpuUsage];
-            cpuChart.data.datasets[0].label = `${data.cpuUsage}%`; // Update the center text
-            cpuChart.update();
-
-            // Update Temperature meter (assuming 80°C is the max temp)
-            let tempPercentage = (data.temp / 80) * 100;
-            tempChart.data.datasets[0].data = [tempPercentage, 100 - tempPercentage];
-            tempChart.data.datasets[0].label = `${data.temp}°C`; // Update the center text
-            tempChart.update();
-        });
-    </script>
+    <div class="pulse-box" id="pulseBox"></div>
+    <script src="main.js"> </script>
 </body>
 </html>

@@ -1,18 +1,53 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f5f5f5;
+    background-color: #1d1f21;
+    color: #fff;
     text-align: center;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
-
 h1 {
-    color: #333;
+    color: #fff;
+    margin-bottom: 30px;
 }
-
+.metric-container {
+    display: flex;
+    justify-content: center;
+    gap: 50px;
+}
 .metric {
-    font-size: 2em;
-    margin: 20px;
+    width: 200px;
+    height: 200px;
+    position: relative;
 }
-
-#temp, #cpu_usage, #time_awake {
-    font-weight: bold;
+.metric canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+.metric p {
+    margin: 0;
+    padding-top: 10px;
+    color: #aaa;
+}
+.metric .center-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+}
+.pulse-box {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 20px;
+    height: 20px;
+    background-color: #5eff5e;
+    border-radius: 5px;
+    transition: background-color 0.5s;
 }
