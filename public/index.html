@@ -67,15 +67,16 @@
             afterDatasetsDraw(chart) {
                 const { ctx, data, chartArea: { width, height } } = chart;
                 ctx.save();
-                const fontSize = (height / 114).toFixed(2);
+                const fontSize = (height / 6).toFixed(2);  // Adjust the font size for better centering
                 ctx.font = `${fontSize}em Arial`;
+                ctx.textAlign = 'center';
                 ctx.textBaseline = 'middle';
 
                 // Get center position
                 const textX = width / 2;
                 const textY = height / 2;
 
-                // Draw the text (the percentage in the center)
+                // Draw the text (the percentage or temperature in the center)
                 ctx.fillStyle = '#fff';
                 const text = `${data.datasets[0].label}`;
                 ctx.fillText(text, textX, textY);
@@ -103,6 +104,8 @@
             options: {
                 responsive: true,
                 cutout: '80%',
+                rotation: -90,  // Start from the top (270°)
+                circumference: -180,  // Counterclockwise progress (180° for half-circle)
                 plugins: {
                     textCenter: true,
                     tooltip: { enabled: false }
@@ -123,6 +126,8 @@
             options: {
                 responsive: true,
                 cutout: '80%',
+                rotation: -90,  // Start from the top (270°)
+                circumference: -180,  // Counterclockwise progress
                 plugins: {
                     textCenter: true,
                     tooltip: { enabled: false }
