@@ -34,6 +34,11 @@
             width: 100% !important;
             height: 100% !important;
         }
+        p {
+            margin: 0;
+            padding-top: 10px;
+            color: #aaa;
+        }
     </style>
     <!-- Load Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -56,6 +61,31 @@
     <script>
         const socket = io();
 
+        // Plugin to add text in the center of the doughnut chart
+        const textCenterPlugin = {
+            id: 'textCenter',
+            afterDatasetsDraw(chart) {
+                const { ctx, data, chartArea: { width, height } } = chart;
+                ctx.save();
+                const fontSize = (height / 114).toFixed(2);
+                ctx.font = `${fontSize}em Arial`;
+                ctx.textBaseline = 'middle';
+
+                // Get center position
+                const textX = width / 2;
+                const textY = height / 2;
+
+                // Draw the text (the percentage in the center)
+                ctx.fillStyle = '#fff';
+                const text = `${data.datasets[0].label}`;
+                ctx.fillText(text, textX, textY);
+                ctx.restore();
+            }
+        };
+
+        // Register the plugin
+        Chart.register(textCenterPlugin);
+
         const cpuMeter = document.getElementById('cpuMeter').getContext('2d');
         const tempMeter = document.getElementById('tempMeter').getContext('2d');
 
@@ -66,13 +96,15 @@
                 datasets: [{
                     data: [0, 100],
                     backgroundColor: ['#4CAF50', '#2f2f2f'],
-                    borderWidth: 2
+                    borderWidth: 2,
+                    label: '0%' // Default label for CPU
                 }]
             },
             options: {
                 responsive: true,
                 cutout: '80%',
                 plugins: {
+                    textCenter: true,
                     tooltip: { enabled: false }
                 }
             }
@@ -84,13 +116,15 @@
                 datasets: [{
                     data: [0, 100],
                     backgroundColor: ['#ff5722', '#2f2f2f'],
-                    borderWidth: 2
+                    borderWidth: 2,
+                    label: '0°C' // Default label for Temp
                 }]
             },
             options: {
                 responsive: true,
                 cutout: '80%',
                 plugins: {
+                    textCenter: true,
                     tooltip: { enabled: false }
                 }
             }
@@ -100,11 +134,13 @@
         socket.on('update_metrics', function (data) {
             // Update CPU meter
             cpuChart.data.datasets[0].data = [data.cpuUsage, 100 - data.cpuUsage];
+            cpuChart.data.datasets[0].label = `${data.cpuUsage}%`; // Update the center text
             cpuChart.update();
 
             // Update Temperature meter (assuming 80°C is the max temp)
             let tempPercentage = (data.temp / 80) * 100;
             tempChart.data.datasets[0].data = [tempPercentage, 100 - tempPercentage];
+            tempChart.data.datasets[0].label = `${data.temp}°C`; // Update the center text
             tempChart.update();
         });
     </script>
