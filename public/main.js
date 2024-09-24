@@ -21,7 +21,7 @@ const createMeter = (context, backgroundColor) => new Chart(context, {
     data: {
         datasets: [{
             data: [0, 100],
-            backgroundColor: [backgroundColor, '#2f2f2f'],
+            backgroundColor: [backgroundColor, '#1212128c'],
             borderWidth: 2
         }]
     },
@@ -36,15 +36,15 @@ const createMeter = (context, backgroundColor) => new Chart(context, {
 
 // Initialize meters
 const charts = {
-    cpu: createMeter(elements.cpuMeter, '#4CAF50'),
-    temp: createMeter(elements.tempMeter, '#ff5722'),
-    ram: createMeter(elements.ramMeter, '#2196F3'),
+    cpu: createMeter(elements.cpuMeter, '#38ff0cc9'),
+    temp: createMeter(elements.tempMeter, '#610cffc9'),
+    ram: createMeter(elements.ramMeter, '#0c59ffc9'),
     uptime: new Chart(elements.uptimeMeter, {
         type: 'doughnut',
         data: {
             datasets: [{
                 data: [1, 120], // Max uptime is 120 minutes
-                backgroundColor: ['#FFEB3B', '#2f2f2f'],
+                backgroundColor: ['#fffa0cc9', '#1212128c'],
                 borderWidth: 2
             }]
         },
@@ -73,20 +73,26 @@ socket.on('update_metrics', (data) => {
 // Handle disconnection event
 socket.on('disconnect', () => {
     toggleConnection(false);
+    elements.pulseBox.style.animationName = "blinkBox";
+    elements.pulseBox.style.animationDuration = '0.2s';
+    elements.pulseBox.style.animationIterationCount = 'infinite';
+    
 });
 
 // Handle reconnection event
 socket.on('connect', () => {
     console.log('Reconnected!');
+    elements.pulseBox.style.animationName = "";
     toggleConnection(true);
 });
 
 // Update the pulse box and document styling based on connection state
 const toggleConnection = (isConnected) => {
     elements.pulseBox.style.backgroundColor = isConnected ? '#ff00f7' : 'red';
+
     document.body.style.background = isConnected
         ? 'linear-gradient(156deg, rgba(2,0,36,1) 0%, rgba(65,3,3,1) 100%)'
-        : '#0d0d0d';
+        : 'linear-gradient(156deg, rgb(4 2 48) 0%, rgb(27 3 3) 100%)';
     elements.refreshMetricsButton.disabled = !isConnected;
     elements.rebootButton.disabled = !isConnected;
 };
@@ -115,7 +121,7 @@ const updateMeter = (chart, textElement, value, unit, rawValue = value, threshol
 
 // Event listeners for buttons
 elements.rebootButton.addEventListener('click', () => {
-    if (confirm('Are you sure you want to reboot Pi?')) {
+    if (confirm('reboot?')) {
         socket.emit('reboot_pi');
         disableButtons();
     }
