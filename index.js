@@ -85,7 +85,7 @@ io.on('connection', (socket) => {
 
 });
 
-const PORT = 5000;
+const PORT = 4000;
 
 const { interval, spinner } = loadingAnimation();
 
