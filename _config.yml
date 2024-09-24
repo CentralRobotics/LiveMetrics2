@@ -1,0 +1,7 @@
+title: LiveMetrics2
+description: >- 
+  LiveMetrics2 is an open-source, real-time metrics monitoring tool for robotics computer systems, specifically designed for use with FRC DriverStation. It offers a customizable interface, making it an adaptable solution for various robotics applications.
+baseurl: "" # If hosting under a subpath (e.g., /blog), include it here. Otherwise, leave it empty.
+url: "http://livemetrics2.rrabbit.co/" # Replace with your actual domain name.
+
+theme: jekyll-theme-cayman
